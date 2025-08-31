@@ -270,7 +270,13 @@ MathJax.startup.promise.then(() => {
 
       function finish(){
         const passed = correct >= 3;
-        const playsEarned = passed ? (correct === 5 ? 3 : (correct === 4 ? 2 : 1)) : 0;
+        let playsEarned = 0;
+        if (passed) {
+            if (correct === 5) playsEarned = 3;
+            else if (correct === 4) playsEarned = 2;
+            else if (correct === 3) playsEarned = 1;
+        }
+
         STATE.plays += playsEarned;
         STATE.progress[subcat] = STATE.progress[subcat] || { completedLevels: [], bestScores:{}, diffDone:{Easy:0,Medium:0,Hard:0,Mastery:0} };
         if(passed && !STATE.progress[subcat].completedLevels.includes(levelIndex+1)){
@@ -286,7 +292,6 @@ MathJax.startup.promise.then(() => {
         STATE.history.push({ subcat, levelIndex, difficulty:diff, score:correct, passed, time: Date.now() });
         saveState(STATE);
 
-        // **FIXED**: This logic correctly disables the button if plays are 0 OR if the player failed the quiz.
         const canPlayGame = STATE.plays > 0 && passed;
 
         app.innerHTML = `
@@ -300,7 +305,7 @@ MathJax.startup.promise.then(() => {
               <button id="launchGame" ${!canPlayGame ? 'disabled' : ''}>Play Mini‑game</button>
               <button class="ghost" id="toLevels">Back to Levels</button>
             </div>
-            ${!passed ? "<p class='muted' style='margin-top:10px;'>You must score at least 3/5 to unlock the mini-game.</p>" : ""}
+            ${!passed ? "<p class='muted' style='margin-top:10px;'>You must score at least 3/5 to play the mini-game.</p>" : ""}
           </div>
         `;
         document.getElementById('review').addEventListener('click', ()=>{
@@ -317,39 +322,39 @@ MathJax.startup.promise.then(() => {
       draw();
     }
 
-  function renderReview(result, context){
-  app.innerHTML = `
-    <div class="header">
-      <div class="row"><button class="ghost" id="backLevels">← Back</button><div class="h1">Answer Review</div></div>
-    </div>
-    <div class="review-grid">
-      ${result.map((r,i)=>`
-        <div class="card">
-          <div class="h2">Question ${i + 1}</div>
-          
-          <!-- This new div properly contains the question, tables, and SVGs -->
-          <div class="question-content">
-            ${r.q}
-          </div>
-
-          <div class="review-answers">
-            ${r.options.map((opt, optIndex) => {
-              let className = '';
-              if (optIndex === r.answerIndex) className = 'correct';
-              else if (optIndex === r.chosen) className = 'incorrect';
-              return `<div class="review-option ${className}">${opt}${optIndex === r.chosen ? '<span class="your-pick"></span>' : ''}</div>`;
-            }).join('')}
-          </div>
-          <div class="explanation"><strong>Explanation:</strong> ${r.explanation || 'N/A'}</div>
+    function renderReview(result, context){
+      app.innerHTML = `
+        <div class="header">
+          <div class="row"><button class="ghost" id="backLevels">← Back</button><div class="h1">Answer Review</div></div>
         </div>
-      `).join('')}
-    </div>
-  `;
-  renderMath();
-  document.getElementById('backLevels').addEventListener('click', ()=> route('levels', context));
-}
+        <div class="grid">
+          ${result.map((r,i)=>`
+            <div class="card">
+              <div class="h2">${i + 1}. ${r.q}</div>
+              <div class="review-answers">
+                ${r.options.map((opt, optIndex) => {
+                  let className = '';
+                  if (optIndex === r.correct) className = 'correct';
+                  else if (optIndex === r.chosen) className = 'incorrect';
+                  return `<div class="review-option ${className}">${opt}${optIndex === r.chosen ? '<span class="your-pick">Your Pick</span>' : ''}</div>`;
+                }).join('')}
+              </div>
+              <div class="explanation"><strong>Explanation:</strong> ${r.explanation || 'N/A'}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      renderMath();
+      document.getElementById('backLevels').addEventListener('click', ()=> route('levels', context));
+    }
     
     function renderFullscreenGame() {
+      // **FIXED**: Check for plays before even creating the modal
+      if (STATE.plays <= 0) {
+          showToast("You have no plays left. Pass a level to earn more!");
+          return;
+      }
+
       const modal = document.createElement('div');
       modal.className = 'game-fullscreen-modal';
       document.body.appendChild(modal);
