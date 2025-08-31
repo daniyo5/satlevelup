@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SAT Game Trainer</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- MathJax Configuration -->
+  <script>
+    MathJax = { 
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">SAT Level-up</div>
+    <div class="actions">
+      <button id="toggleTheme" aria-label="Toggle light/dark">🌙</button>
+    </div>
+  </header>
+
+  <main id="app" class="container">
+    <!-- App renders here -->
+  </main>
+
+  <footer class="footer">
+    <div>"The expert in anything was once a beginner"</div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="questions.js"></script>
+  <script src="piano.js"></script>
+  <script src="main.js"></script>
+<script>
+  
+</script>
+</body>
+</html>
