@@ -336,7 +336,7 @@ MathJax.startup.promise.then(() => {
                   let className = '';
                   if (optIndex === r.correct) className = 'correct';
                   else if (optIndex === r.chosen) className = 'incorrect';
-                  return `<div class="review-option ${className}">${opt}${optIndex === r.chosen ? '<span class="your-pick">Your Pick</span>' : ''}</div>`;
+                  return `<div class="review-option ${className}">${opt}${optIndex === r.chosen ? '<span class="your-pick"></span>' : ''}</div>`;
                 }).join('')}
               </div>
               <div class="explanation"><strong>Explanation:</strong> ${r.explanation || 'N/A'}</div>
